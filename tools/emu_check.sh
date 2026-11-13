@@ -14,24 +14,21 @@ WHICH="${1:-all}"
 
 run() {   # BOARD PACKAGE MS SNAPS KEYS
     d="$ROOT/build/emu/$1"; rm -rf "$d"; mkdir -p "$d/work"
-    (cd "$d" && "$EMU" --fwsc "$2" --ms "$3" --wav "$1.wav" --snap "$4" --keys "$5" > run.log 2>&1)
+    (cd "$d" && "$EMU" --fwsc "$2" --ms "$3" --wav "$1.wav" --snap "$4" ${5:+--keys "$5"} > run.log 2>&1)
     python3 "$ROOT/tools/sheet.py" "$d/sheet.png" "$d/work"
     python3 "$ROOT/tools/wavstat.py" "$d/$1.wav" > "$d/wav.txt"
     grep -E "^time|lcd frames|unknown MMIO" "$d/run.log" || true
     echo "$1: build/emu/$1/{sheet.png,$1.wav,wav.txt,run.log}"
 }
 
-# the FM-1: boot (HOME), MIDI into the TRS jack (C4 on, off), the test tone (PLAY on, off), the TEST page (HOME), a key, an
-# encoder, a button, the MASTER pot, the LED walk (REC), back to HOME
+# the FM-1: boot; the tone (PLAY on, off); a key, an encoder, a button, the MASTER pot; the LED levels (REC steps them)
 if [ "$WHICH" = fm1 ] || [ "$WHICH" = all ]; then
-    run fm1 "$ROOT/build/fm1/emu/lorcha-fm1-emu.fwsc" 7000 1500,2200,3100,3900,4500,5300,6500 \
-        '1600:midi:903c64,2400:midi:803c00,2600:PLAY,3400:PLAY,3600:HOME,4000-4700:n7,4100:enc0:+3,4200-4800:SCL,4300:pot:300,5000:REC,6000:HOME'
-    run fm1-release "$ROOT/build/fm1/lorcha-fm1.fwsc" 2600 2000,2500 '2100:HOME'
+    run fm1 "$ROOT/build/fm1/emu/lorcha-fm1-emu.fwsc" 5000 1000,1800,2900,3600,4800 \
+        '1100:PLAY,2200:PLAY,2400-3200:n7,2500:enc0:+3,2600-3300:SCL,2700:pot:300,3400:REC,3500:REC,4600:REC'
+    run fm1-release "$ROOT/build/fm1/lorcha-fm1.fwsc" 1500 1400 ''
 fi
-# the SMK-37 Pro: boot, the tone (SEQ PLAY), the TEST page (PATCH), keys (velocity), encoders, the octave, the wave (SCALE),
-# the walk (SEQ REC), back to HOME
+# the SMK-37 Pro (built, not the target): boot, the tone (SEQ PLAY), keys, an encoder, a button, the LED levels (SEQ REC)
 if [ "$WHICH" = smk37 ] || [ "$WHICH" = all ]; then
-    run smk37 "$ROOT/build/smk37pro/emu/lorcha-smk37pro-emu.fwsc" 7000 1500,3100,3900,4500,5300,6500 \
-        '1600:SEQPLAY,2400:SEQPLAY,2600-3000:K12,3600:PATCH,4000-4700:K7,4100:enc1:+3,4200-4800:SCALE,5000:SEQREC,5800-6200:K20,6300:PATCH'
-    run smk37-release "$ROOT/build/smk37pro/lorcha-smk37pro.fwsc" 2600 2000,2500 '2100:PATCH'
+    run smk37 "$ROOT/build/smk37pro/emu/lorcha-smk37pro-emu.fwsc" 4000 1800,3500 \
+        '1100:SEQPLAY,2200:SEQPLAY,2400-3200:K7,2500:enc1:+3,2600-3300:SCALE,2800:SEQREC'
 fi

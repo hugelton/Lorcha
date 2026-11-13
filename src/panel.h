@@ -12,7 +12,7 @@
 
 #define PN_W 240u
 #define PN_H 240u
-#define PN_STRIP_ROWS 32u
+#define PN_STRIP_ROWS 16u
 static uint8_t pn_args[16];
 static uint8_t pn_strip[PN_W * 2u * PN_STRIP_ROWS] __attribute__((aligned(4)));   /* pixels, MSB first */
 static uint32_t pn_bad;                 /* drawing calls out of the screen (refused) */
@@ -66,7 +66,7 @@ static void pn_init(void)
 {
     static const uint8_t colmod = 0x55, madctl = LB_LCD_MADCTL;
     lb_lcd_hw_init();
-    fm1_delay_ms(LB_LCD_SETTLE_MS);
+    fm1_delay_ms(50);
     pn_cmd(0x01, 0, 0);                 /* SWRESET */
     fm1_delay_ms(150);
 #ifdef LB_LCD_SEQ

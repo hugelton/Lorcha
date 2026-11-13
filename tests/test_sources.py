@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MPL-2.0
 # Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments
-"""The sources: every string the firmware may draw is in the font (font_test does the check, given the strings), the
+"""The sources (MPL-2.0): every string the firmware may draw is in the font (font_test does the check, given the strings), the
 licence header on every file, each board header gives the calls lorcha.c makes, no words that must not appear."""
 import re
 import subprocess
@@ -12,12 +12,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src"
 BOARDS = ["board_fm1.h", "board_smk37.h", "board_pocketamp.h"]
-CALLS = ["LB_NAME", "LB_NBTN", "LB_BTN_NAME", "LB_B_PAGE", "LB_B_TONE", "LB_B_NOTE", "LB_B_WALK", "LB_B_WAVE", "LB_NKEY",
-         "LB_KEY_NOTE0", "LB_NENC", "LB_ENC_NAME", "LB_ENC_CUTOFF", "LB_NAN", "LB_AN_NAME", "LB_AN_MASTER", "LB_NPAD",
-         "LB_NLED", "LB_HAS_JACK", "LB_JEDEC_OK", "LB_AUDIO_HALF_FRAMES", "lb_init", "lb_tick", "lb_buttons", "lb_keys",
-         "lb_key_vel", "lb_enc_take", "lb_pads", "lb_pad_vel", "lb_analog_poll", "lb_analog", "lb_jack", "lb_led",
-         "lb_pad_rgb", "lb_leds_flush", "lb_lcd_hw_init", "lb_lcd_cmd_raw", "lb_lcd_data_raw", "lb_lcd_after_init",
-         "lb_lcd_timeouts", "lb_audio_start", "fm1_alnk0_irq", "FL_RANGE_OK"]
+CALLS = ["LB_NAME", "LB_NBTN", "LB_BTN_NAME", "LB_B_TONE", "LB_B_LED", "LB_B_MIDI", "LB_NKEY", "LB_KEY_NOTE0", "LB_NENC",
+         "LB_ENC_NAME", "LB_NAN", "LB_AN_NAME", "LB_NPAD", "LB_NLED", "LB_LED_NLEVELS", "lb_init", "lb_tick", "lb_buttons",
+         "lb_keys", "lb_pads", "lb_enc_take", "lb_analog_poll", "lb_analog", "lb_led_level_name", "lb_led", "lb_leds_flush",
+         "lb_lcd_hw_init", "lb_lcd_cmd_raw", "lb_lcd_data_raw", "lb_lcd_after_init", "LB_LCD_MADCTL", "lb_audio_start",
+         "fm1_alnk0_irq"]
 
 
 def strings(text):
@@ -28,7 +27,7 @@ class Sources(unittest.TestCase):
     def test_drawn_strings_in_font(self):
         """the strings in lorcha.c and the board headers (but the console's, includes and asm), through font_test"""
         found = []
-        for f in ["lorcha.c", "midi.h", "synth.h"] + BOARDS:
+        for f in ["lorcha.c", "midi.h", "tone.h"] + BOARDS:
             for line in (SRC / f).read_text().splitlines():
                 if "#include" in line or "__asm__" in line or "con_puts" in line or "section(" in line:
                     continue
@@ -52,8 +51,6 @@ class Sources(unittest.TestCase):
         for b in BOARDS:
             text = (SRC / b).read_text()
             for c in CALLS:
-                if c == "FL_RANGE_OK" and b == "board_smk37.h":
-                    continue                                   # (smk37_map.h's)
                 self.assertRegex(text, r"\b" + c + r"\b", f"{b}: {c}")
 
     def test_no_forbidden_words(self):

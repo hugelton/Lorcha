@@ -2,7 +2,7 @@ Lorcha
 Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments
 MPL-2.0 (LICENSE).
 
-Lorcha is a template firmware written on felucca-bsp (https://github.com/hugelton/felucca-bsp), taken here as the submodule
+Lorcha is a small hardware checker written on felucca-bsp (https://github.com/hugelton/felucca-bsp), taken here as the submodule
 bsp/ at felucca-bsp-smk37 (https://github.com/hugelton/felucca-bsp-smk37, felucca-bsp with the SMK-37 board layer, Alpha).
 felucca-bsp's NOTICE (bsp/NOTICE) applies to every file of it, and so to every firmware image and package built here: the
 credits there (Felucca, Melodee, Optimist, the USB MIDI host's authors, fm1-to-smk37's facts for the SMK-37 board, the JieLi

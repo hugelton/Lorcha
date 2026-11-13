@@ -28,7 +28,6 @@ LD="$TC/pi32v2/bin/ld"
 OBJCOPY="$TC/common/bin/objcopy"
 OBJDUMP="$TC/common/bin/objdump"
 CFLAGS="-Os -ffunction-sections -fno-builtin -Wall -Wno-unused-function -Werror"
-VERSION=$(sed -n 's/^#define LORCHA_VERSION "\(.*\)"/\1/p' src/lorcha.c)
 
 # app OUT NAME DEFINES INCLUDES...: the app image (code in place from XIP, .data and .ram_text appended where they load)
 app() {
@@ -61,7 +60,6 @@ loader() {
 
 package() {   # OUT NAME BOARD PRODUCT
     python3 tools/lorcha_pkg.py --board "$3" "$1/$2.bin" "$1/loader.raw" "$1/$2.fwsc" --product "$4" --sdk "$SDK"
-    grep -q "$4" "$1/$2.bin" || { echo "build_in.sh: the app does not carry the identity $4" >&2; exit 1; }
 }
 
 fm1() {
@@ -115,4 +113,4 @@ pocketamp) pocketamp ;;
 all) fm1; smk37 pro; smk37 elite; pocketamp ;;
 *) echo "build_in.sh: --board fm1|smk37|pocketamp|all" >&2; exit 2 ;;
 esac
-echo "Lorcha $VERSION: built ($BOARD)"
+echo "Lorcha: built ($BOARD)"

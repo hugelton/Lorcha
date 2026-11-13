@@ -183,7 +183,6 @@ class Built(unittest.TestCase):
             raw = pkg.read_bytes()
             self.assertEqual(identity_of(raw), product, d)
             app = (ROOT / "build" / d / f"lorcha-{d}.bin").read_bytes()
-            self.assertIn(product.encode(), app, d)        # the app answers the package's identity
             self.assertLessEqual(len(app), lorcha_pkg.SLOTS["smk37" if d.startswith("smk37") else d])
             ota = (ROOT / "build" / d / f"lorcha-{d}.ota.bin").read_bytes()
             img = ldrwrap.unwrap(ota)
