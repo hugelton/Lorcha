@@ -1,0 +1,5 @@
+-Isrc
+-Ibsp/chip
+-Ibsp/boards/fm1
+-DLORCHA_BOARD_FM1
+-std=c11

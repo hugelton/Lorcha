@@ -1,0 +1,47 @@
+felucca-bsp: let a board's loader set its own identity, write range and app / record ranges
+
+loader/loader.c and loader/ldr_core.c define FELUCCA_ID, FL_RANGE_OK and LDR_APP_LO .. LDR_DATA_HI unconditionally, so the
+values boards/smk37/smk37_map.h gives the SMK-37 loader (SMK_LOADER) are replaced by the FM-1's: the loader built that way
+answers "ota-FM-1_900", writes the FM-1's app area (0x4000..0x93000) and looks for records in 0x93000..0xFC000. Guarded
+as pendel-bsp guards them. Found by Lorcha's build (2026-11-13) against felucca-bsp-smk37 main 2210cce; Lorcha applies it
+to a copy of bsp/ for the SMK-37 loader only (tools/build_in.sh). The FM-1's loader is unchanged by it (nothing set).
+
+--- a/loader/ldr_core.c
++++ b/loader/ldr_core.c
+@@ -37,12 +37,14 @@
+  *   with LDR_FAST_CHUNK (the fast install, ldr_fast below): ldr_erase_begin(off) ldr_erase_end(), an erase while a
+  *   sector comes in (no flash access between)
+  * plus the ota.c hooks (frames, time, idle). */
++#ifndef LDR_APP_HI                              /* a board's loader sets these first (boards/smk37/smk37_map.h) */
+ #define LDR_APP_LO 0x4000u
+ #define LDR_APP_HI 0x93000u
+ #define LDR_REC_LO 0x93000u                     /* update records live above the app ... */
+ #define LDR_REC_HI 0xFC000u                     /* ... and below Felucca's globals (Felucca's records: 0xE4F00, */
+ #define LDR_DATA_LO 0x97000u                    /* the stock firmware's: 0xE8F00), never in Felucca's store, whose */
+ #define LDR_DATA_HI 0xE0000u                    /* bytes (user samples) the host writes */
++#endif
+ #define LDR_NSEC ((LDR_APP_HI - LDR_APP_LO) >> 12)
+ #define LDR_FL_MAX 0x100000u                    /* flash.bin: at most the 1 MiB part */
+ 
+--- a/loader/loader.c
++++ b/loader/loader.c
+@@ -12,7 +12,9 @@
+ #define FELUCCA_OTA 1
+ #define FELUCCA_OTA_DRYRUN 0
+ #define FELUCCA_USB_PID 0x0002
++#ifndef FELUCCA_ID                              /* a board's loader sets these first (boards/smk37/smk37_map.h) */
+ #define FELUCCA_ID "ota-FM-1_900"
++#endif
+ #define LDR_FAST_CHUNK 4096u           /* the fast install (ldr_core.c): one sector per read */
+ #define OTA_FRAME_MAX 4200u            /* a decoded 4 KiB response (4111 B) */
+ #define RING_PUBLISH() __asm__ volatile("" ::: "memory")
+@@ -20,7 +22,9 @@
+ #include "fm1_sys.h"
+ /* the loader may write the app area and clear update records (program over one, or erase its own staging); never
+  * the head, nor Felucca's store [0x97000, 0xE0000) (user data, never a record: ldr_core.c) */
++#ifndef FL_RANGE_OK
+ #define FL_RANGE_OK(off, n) (FL_IN(off, n, 0x4000u, 0x97000u) || FL_IN(off, n, 0xE0000u, 0xFC000u))
++#endif
+ #include "fm1_flash.h"
+ #include "../chip/libc.c"
+ #include "../chip/usb.c"

@@ -1,0 +1,22 @@
+Lorcha
+Copyright (C) 2026 Leo Kuroshita (@kurogedelic), Hügelton Instruments
+MPL-2.0 (LICENSE).
+
+Lorcha is a template firmware written on felucca-bsp (https://github.com/hugelton/felucca-bsp), taken here as the submodule
+bsp/ at felucca-bsp-smk37 (https://github.com/hugelton/felucca-bsp-smk37, felucca-bsp with the SMK-37 board layer, Alpha).
+felucca-bsp's NOTICE (bsp/NOTICE) applies to every file of it, and so to every firmware image and package built here: the
+credits there (Felucca, Melodee, Optimist, the USB MIDI host's authors, fm1-to-smk37's facts for the SMK-37 board, the JieLi
+AC79 SDK) are this firmware's too. The Pocket AMP's update loader is pendel-bsp's (https://github.com/hugelton/pendel-bsp,
+MPL-2.0, the submodule pendel-bsp/), a branch of felucca-bsp; its NOTICE (pendel-bsp/NOTICE) applies to that loader.
+
+patches/felucca-bsp-loader-board-overrides.patch changes two felucca-bsp files (loader/loader.c, loader/ldr_core.c) for the
+SMK-37's loader; under MPL-2.0 the change is published with it.
+
+The Pocket AMP's flash layout in tools/lorcha_pkg.py (the app area, the region descriptors) and its update staging in
+src/board_pocketamp.h are facts of that unit's flash; the SMK-37's are felucca-bsp-smk37's (from fm1-to-smk37, facts only).
+
+A package (.fwsc) carries three files of the JieLi AC79 SDK (uboot.boot, cfg_tool.bin, eq_cfg_hw.bin; Apache-2.0,
+Copyright (c) Zhuhai Jieli Technology Co., Ltd.): ship LICENSES/Apache-2.0.txt with every package. They are not in this
+repository; tools/build.sh takes them from AC79_SDK.
+
+Unofficial. Not affiliated with or endorsed by M-VAVE or JieLi. Product and company names belong to their owners.

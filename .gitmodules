@@ -1,0 +1,6 @@
+[submodule "bsp"]
+	path = bsp
+	url = https://github.com/hugelton/felucca-bsp-smk37.git
+[submodule "pendel-bsp"]
+	path = pendel-bsp
+	url = https://github.com/hugelton/pendel-bsp.git
